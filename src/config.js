@@ -16,7 +16,7 @@ export default {
         "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-1pzvv%40coderhouseclasses.iam.gserviceaccount.com"
     },
     mongodb: {
-        cnxStr: 'mongodb+srv://admin:adminpw@cluster0.vfrm3.mongodb.net/messages?retryWrites=true&w=majority'
+        cnxStr: 'mongodb+srv://admin:adminpw@cluster0.vfrm3.mongodb.net/sessions?retryWrites=true&w=majority'
     },
     
 }
