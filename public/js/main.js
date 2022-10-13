@@ -13,6 +13,12 @@ socket.on('serv-msgs', dataN => {
     })
 })
 
+socket.on('serv-prods', async (data) => {
+    await renderProducts(data).then(html => {
+        document.getElementById('prods_table').innerHTML = html;
+    })
+})
+
 /* --------------------------- HANDLEBARS ---------------------------*/
 async function renderMessages (data, compression) {
     return fetch('templates/messagesCenter.hbs')
@@ -24,6 +30,18 @@ async function renderMessages (data, compression) {
             return html
         })
 }
+
+async function renderProducts (data) {
+    return fetch('templates/prod_table.hbs')
+        .then(resp => resp.text())
+        .then(temp => {
+            const template = Handlebars.compile(temp);
+            const html = template( {data} );
+
+            return html
+        })
+}
+
 
 /* ------------------ DESNORMALIZACION DE MENSAJES ------------------*/
 const authorSchema = new normalizr.schema.Entity('author', {}, { idAttribute: 'email' });
@@ -54,4 +72,22 @@ function sendMessage() {
     }
 
     socket.emit('client-msg', msg)
+}
+
+function addProduct() {
+    const inputTitle = document.getElementById('title');
+    const inputPrice = document.getElementById('price');
+    const inputThumbnail = document.getElementById('thumbnail');
+
+    const prod = {
+        title: inputTitle.value,
+        price: inputPrice.value,
+        thumbnail: inputThumbnail.value
+    }
+
+    socket.emit('client-prods', prod)
+}
+
+function logout() {
+    window.location.href = "/logout";
 }

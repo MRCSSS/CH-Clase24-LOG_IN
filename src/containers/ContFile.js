@@ -2,11 +2,13 @@
 import { promises as fs } from 'fs';
 import config from '../config.js';
 import moment from 'moment';
+import * as dotenv from 'dotenv';
 
 /* ------------------------ CLASE CONTENEDOR ------------------------ */
 class ContFile {
     constructor(path) {
-        this.path = `${config.fileSystem.path}/${path}`;
+        // this.path = `${config.fileSystem.path}/${path}`;
+        this.path = `${process.env.FILESYSTEM_PATH}/${path}`;
     }
 
     async getAll() {
@@ -20,18 +22,9 @@ class ContFile {
     }
 
     async save(obj) {
-        console.log("obj", obj)
         const objs = await this.getAll();
-        // let newID;
-
-        // if (objs.length === 0) {
-        //     newID = 1;
-        // } else {
-        //     newID = objs[objs.length-1].id+1;
-        // }
-
-        // const newObj = { ...obj, timestamp: moment().format('DD/MM/YY HH:mm:ss'), id:newID };
         const newObj = { ...obj, timestamp: moment().format('DD/MM/YY HH:mm:ss') };
+
         objs.push(newObj);
 
         try {

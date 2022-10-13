@@ -28,8 +28,8 @@
       "email": "correo@mail.com",
       "name": "Marcos",
       "lastName": "Solis",
-      "age": "27",
-      "nickname": "soMSS",
+      "age": 23,
+      "nickname": "soyMSS",
       "avatar": "https://www.w3schools.com/howto/img_avatar.png"
     },
     "timestamp": "07/10/22 23:48:41",
