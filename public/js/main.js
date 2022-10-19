@@ -42,7 +42,6 @@ async function renderProducts (data) {
         })
 }
 
-
 /* ------------------ DESNORMALIZACION DE MENSAJES ------------------*/
 const authorSchema = new normalizr.schema.Entity('author', {}, { idAttribute: 'email' });
 const messageSchema = new normalizr.schema.Entity('post', { author: authorSchema }, { idAttribute: 'id' });

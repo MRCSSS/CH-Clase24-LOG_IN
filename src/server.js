@@ -1,27 +1,38 @@
 /* ---------------------------- MODULOS ----------------------------- */
+import connectMongo from 'connect-mongo';
+import * as dotenv from 'dotenv';
 import express from 'express';
+import session from 'express-session';
 import { createServer } from 'http';
 import morgan from 'morgan';
-import { Server } from 'socket.io';
 import { normalize, schema } from 'normalizr';
+import path from 'path';
+import { Server } from 'socket.io';
 import { msgsDao, productsDao } from './daos/index.js';
-import connectMongo from 'connect-mongo';
-import session from 'express-session';
-import * as dotenv from 'dotenv';
-import path, {dirname} from 'path';
-import { fileURLToPath } from 'url';
+import { create } from 'express-handlebars';
+
 dotenv.config();
 
 /* ---------------------- INSTANCIA DE SERVER ----------------------- */
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer);
+const exphbs = create({
+    layoutsDir: path.join(app.get('views'), 'layouts'),
+    partialsDir: path.join(app.get('views'), 'partials'),
+    extname: 'hbs'
+})
 
 /* ------------------ PERSISTENCIA DE SESION MONGO ------------------ */
 const MongoStore = connectMongo.create({
     mongoUrl: process.env.MONGO_URL,
-    ttl: 1 *60 // Minutos *60
+    ttl: 10 *60 // Minutos *60
 })
+
+/* ---------------------- MOTOR DE PLANTILLAS -----------------------*/
+app.engine('hbs', exphbs.engine);
+app.set('views', path.join(process.cwd(), 'views'));
+app.set('view engine', 'hbs');
 
 /* -------------------------- MIDDLEWARES --------------------------- */
 app.use(express.static('public'));
@@ -34,7 +45,8 @@ app.use(session({
     store: MongoStore,
     secret: process.env.SECRET_KEY,
     resave: true,
-    saveUninitialized: true
+    saveUninitialized: true,
+    rolling: true
 }))
 
 // Session Middleware
@@ -71,7 +83,12 @@ app.get('/authentication', (req, res) => {
 })
 
 app.get('/home', auth, (req, res) => {
-    res.sendFile(path.join(process.cwd(), 'public', 'home.html'));
+    const user = req.session.user
+
+    // res.render('layouts/home',user);
+    res.render('layouts/home', { user:req.session.user });
+
+    // res.sendFile(path.join(process.cwd(), 'public', 'home.html'));
 });
 
 app.get('/logout', (req, res)=> {
