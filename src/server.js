@@ -20,6 +20,7 @@ const io = new Server(httpServer);
 const exphbs = create({
     layoutsDir: path.join(app.get('views'), 'layouts'),
     partialsDir: path.join(app.get('views'), 'partials'),
+    defaultLayout: null,
     extname: 'hbs'
 })
 
@@ -54,7 +55,8 @@ function auth(req, res, next) {
     if (req.session?.user && req.session?.admin) {
       return next()
     }
-    return res.sendFile(path.join(process.cwd(), 'public', 'logout.html'));
+    return res.render('layouts/logout', { user: user });
+
 }
 
 /* ------------------------------ RUTAS ----------------------------- */
@@ -67,7 +69,7 @@ app.get('/', (req, res) => {
 })
 
 app.get('/login', (req, res) => {
-    res.sendFile(path.join(process.cwd(), 'public', 'login.html'));
+    res.render('layouts/login');
 });
 
 app.get('/authentication', (req, res) => {
@@ -83,22 +85,22 @@ app.get('/authentication', (req, res) => {
 })
 
 app.get('/home', auth, (req, res) => {
-    const user = req.session.user
-
-    // res.render('layouts/home',user);
     res.render('layouts/home', { user:req.session.user });
-
-    // res.sendFile(path.join(process.cwd(), 'public', 'home.html'));
 });
 
 app.get('/logout', (req, res)=> {
+    const user = req.session.user;
+
     req.session.destroy(err=>{
         if (err) {
             res.json({err});
         } else {
-            res.sendFile(path.join(process.cwd(), 'public', 'logout.html'));
+            res.render('layouts/logout', { user: user });
         }
     });
+
+    setTimeout( res.redirect('/'), 2000 );
+
 });
 
 app.get('*', async (request, response) => {
