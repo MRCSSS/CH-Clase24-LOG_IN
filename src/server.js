@@ -53,9 +53,10 @@ app.use(session({
 // Session Middleware
 function auth(req, res, next) {
     if (req.session?.user && req.session?.admin) {
-      return next()
+        res.render('layouts/home', { user: req.session.user });
+        return next()
     }
-    return res.render('layouts/logout', { user: user });
+    return res.redirect('/logout');
 
 }
 
@@ -85,7 +86,6 @@ app.get('/authentication', (req, res) => {
 })
 
 app.get('/home', auth, (req, res) => {
-    res.render('layouts/home', { user:req.session.user });
 });
 
 app.get('/logout', (req, res)=> {
@@ -98,9 +98,6 @@ app.get('/logout', (req, res)=> {
             res.render('layouts/logout', { user: user });
         }
     });
-
-    setTimeout( res.redirect('/'), 2000 );
-
 });
 
 app.get('*', async (request, response) => {
